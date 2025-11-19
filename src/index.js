@@ -1,30 +1,3 @@
-/* import express from 'express'
-import { prisma } from './utils/prisma.js'
-
-
-
-const app = express()
-
-
-    Tem que ter uma rota que vai inserir dados no banco de dados (criação de um novo usuario)
-
-    Uma rota que vai buscar um usuario no banco e se for verdade vai logar o usaurio na aplicação
-
-
-
-
-
-
-app.post('/newUser', async (req, res) =>{
-
-    
-
-}) 
-app.listen(5500)
-
-
- */
-
 import express from "express";
 import { prisma } from './utils/prisma.js'
 import cors from "cors";
@@ -83,56 +56,8 @@ app.get('/', (req, res) => {
   res.send('Padrão do projeto')
 
 })
-/* 
-app.post('/login', async (req, res) => {
 
-  const { email, password } = req.body
-
-  try {
-
-    if (!email, !password) {
-      return res.status(404).json({
-        error: "é preciso Email e senha "
-      })
-    }
-
-    const userLog = await prisma.user.findFirst({
-      where: { email: email },
-
-    })
-
-    if (userLog.password !== password) {
-      return res.status(404).send({
-        message: "senha incorreta!"
-      })
-    }
-
-    if (userLog) {
-      userlogado = true
-      res.send({
-        retorno: "Usuario encontrado, voce estaria logado agora",
-        user: userLog
-      })
-      res.redirect('app.html')
-
-
-    } else {
-      res.send({
-        retorno: "Usuario nao encontrado",
-        user: userLog
-      })
-
-    }
-
-  } catch (erro) {
-    console.log(erro)
-    res.status(500).send({ erro: "Erro no servidor" })
-
-  }
-
-}) */
-
-  
+// Rota para login
 app.post('/login', async (req, res) => {
 
   const { email, password } = req.body
