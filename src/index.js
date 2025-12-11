@@ -21,13 +21,13 @@ app.post("/register", async (req, res) => {
     }
 
     // Verificar se o usuário já existe
-    /* const usuarioExistente = await prisma.user.findUnique({
+     const usuarioExistente = await prisma.user.findFirst({
       where: { email },
     });
 
     if (usuarioExistente) {
       return res.status(409).json({ error: "Email já cadastrado." });
-    } */
+    } 
 
     const senhaProtegida = await bcrypt.hash(password, 10)
 
@@ -53,7 +53,7 @@ app.post("/register", async (req, res) => {
 
 app.get('/', (req, res) => {
 
-  res.send('Padrão do projeto')
+  res.send('Bem vindo ao IdFocus, para acessar: https://eckin33.github.io/Projeto-IdFocus ')
 
 })
 
@@ -72,7 +72,7 @@ app.post('/login', async (req, res) => {
 
     const user = await prisma.user.findFirst({where: {email}})
 
-    if(!user) return res.status(404).send("Email não encontrado.")
+    if(!user) return res.status(404).send({message: "Email não encontrado."})
     
     const senhaCorreta = await bcrypt.compare(password, user.password)
 
@@ -96,12 +96,14 @@ app.post('/login', async (req, res) => {
       
 
     }else{
-      return res.status(404).send("Senha incorreta.")
+      return res.status(404).send({
+        message: "Senha incorreta"
+      })
     }
 
   } catch (erro) {
     console.log(erro)
-    res.status(500).send({ erro: "Erro no servidor" })
+    res.status(500).send({ message: "Erro no servidor" })
 
   }
 
