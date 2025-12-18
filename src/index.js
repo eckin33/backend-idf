@@ -109,6 +109,37 @@ app.post('/login', async (req, res) => {
 
 })
 
+
+app.post('/events', async (req, res) => {
+
+  const { tipo, email, metadada} = req.body
+
+  try {
+    
+    if(!tipo || !email || !metadada){
+      return res.status(401).send({message: "Algo errado"})
+    }
+
+    const event = await prisma.event.create({
+      data: {
+        tipo,
+        email, 
+        metadada
+      }
+    })
+    
+    res.status(200).send({
+      message: "OK",
+      event
+    })
+
+  } catch (error) {
+      return res.status(404).send({error: error})
+    
+  }
+
+})
+
 //Midleware, será util quando for necessário rotas privadas.
 function checkToken(req, res, next){
 

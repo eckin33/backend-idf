@@ -14,3 +14,11 @@ model user {
   name     String
   password String
 }
+
+model Event {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  tipo     String
+  email    String
+  metadada Json
+  createdAt DateTime @default(now())
+}
