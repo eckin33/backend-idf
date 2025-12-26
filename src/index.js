@@ -303,6 +303,7 @@ app.get('/metrics/focus/today', checkToken, async (req, res) => {
     let quantidadeTotalAcoes = coleta.length
     let sessoesFoco = coleta.filter(item => item.tipo == "POMODORO_START").length
     let quantidadePausas = coleta.filter(item => item.metadada.reason == "paused").length
+    let quantidadeConcluidas = coleta.filter(item => item.metadada.reason == "completed").length
     let tempoFocado = coleta.filter(item => item.metadada.tempoPlanejado > 0).reduce((total, item) => total + item.metadada.tempoPlanejado, 0);
 
     res.status(200).send({
@@ -310,7 +311,8 @@ app.get('/metrics/focus/today', checkToken, async (req, res) => {
       quantidadeTotalAcoes,
       sessoesFoco,
       tempoFocado,
-      quantidadePausas
+      quantidadePausas,
+      quantidadeConcluidas
     })
 
   } catch (error) {
@@ -333,7 +335,7 @@ app.get('/metrics/tasks/history', checkToken, async (req, res) => {
     const coleta = await prisma.event.findMany({
       where: {
         email: email,
-        tipo: "TASK_CREATED",
+        tipo: {contains: "TASK_"},
         createdAt: {
           gte: dataLimite,
           lte: dataAtual
@@ -344,11 +346,19 @@ app.get('/metrics/tasks/history', checkToken, async (req, res) => {
       }
     })
 
-    let quantidadeTotal = coleta.length
+    let quantidadeTotalAcoes = coleta.length
+    let quantidadeConcluidas = coleta.filter(item => item.tipo == "TASK_TOGGLED" && item.metadada.marcado == true).length
+    let quantidadeCriadas = coleta.filter(item => item.tipo == "TASK_CREATED").length
+    let quantidadeEditadas = coleta.filter(item => item.tipo == "TASK_EDITED").length
+    let quantidadeDeletadas = coleta.filter(item => item.tipo == "TASK_DELETED").length
 
     res.status(200).send({
       message: "sucesso",
-      quantidadeTotal
+      quantidadeTotalAcoes,
+      quantidadeConcluidas,
+      quantidadeCriadas,
+      quantidadeEditadas,
+      quantidadeDeletadas
     })
 
   } catch (error) {
