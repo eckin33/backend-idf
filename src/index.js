@@ -392,6 +392,21 @@ app.get('/metrics/focus/history', checkToken, async (req, res) => {
       }
     })
 
+    const coleta2 = await prisma.event.findMany({
+      where: {
+        email: email,
+        createdAt: {
+          gte: dataLimite,
+          lte: dataAtual 
+        },
+        tipo: {
+          contains: "POMODORO"
+        }
+
+      }
+    })
+
+    
     let data = coleta.map(item => {
       {
         return {
@@ -401,10 +416,20 @@ app.get('/metrics/focus/history', checkToken, async (req, res) => {
         }
       }
     })
+    let quantidadeTotalAcoes = coleta2.length
+    let sessoesFoco = coleta2.filter(item => item.tipo == "POMODORO_START").length
+    let quantidadePausas = coleta2.filter(item => item.metadada.reason == "paused").length
+    let quantidadeConcluidas = coleta2.filter(item => item.metadada.reason == "completed").length
+    let tempoFocado = coleta2.filter(item => item.metadada.tempoPlanejado > 0).reduce((total, item) => total + item.metadada.tempoPlanejado, 0);
 
     res.status(200).send({
       message: "sucesso",
-      data
+      data,
+      quantidadeTotalAcoes,
+      sessoesFoco,
+      tempoFocado,
+      quantidadePausas,
+      quantidadeConcluidas
 
     })
 
@@ -483,13 +508,23 @@ app.get('/metrics/productivity', checkToken, async (req, res) => {
 app.get('/dashboard', checkToken, async (req, res) => {
 
   const email = req.user.email
+  let days = req.query.days || 7
+
+  const dataAtual = new Date();
+  const dataLimite = new Date(dataAtual.getTime() - (days * 24 * 60 * 60 * 1000));
+
 
   try {
 
     const coleta = await prisma.event.findMany({
       where: {
-        email: email
+        email: email,
+        createdAt: {
+          gte: dataLimite,
+          lte: dataAtual
+        }
       }
+      
     })
 
     let qtdTotal = coleta.length
